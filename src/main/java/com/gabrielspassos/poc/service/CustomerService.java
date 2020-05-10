@@ -27,10 +27,10 @@ public class CustomerService {
     private CustomerRepository customerRepository;
 
     public Mono<CustomerDTO> createCustomer(CustomerRequest customerRequest) {
-        customerRepository.findByEmailAndDocument(customerRequest.getEmail(), customerRequest.getDocument())
-                .switchIfEmpty(x -> createCustomerEntity(customerRequest)
-                        .map(CustomerDTOBuilder::build)
-                ).doOnError(error -> logger.error(""));
+        return getCustomer(customerRequest.getEmail(), customerRequest.getDocument())
+                .onErrorResume(NotFoundException.class,
+                        exception -> createCustomerEntity(customerRequest).map(CustomerDTOBuilder::build)
+                ).doOnSuccess(customerDTO -> logger.info("Created customer {}", customerDTO));
     }
 
     public Mono<CustomerDTO> getCustomer(String email, String document) {
@@ -44,6 +44,7 @@ public class CustomerService {
     private Mono<CustomerEntity> createCustomerEntity(CustomerRequest customerRequest) {
         return passwordService.encryptPassword(customerRequest.getPassword())
                 .map(encryptedPassword -> CustomerEntityBuilder.build(customerRequest, encryptedPassword))
-                .flatMap(customerEntity -> customerRepository.save(customerEntity));
+                .flatMap(customerEntity -> customerRepository.save(customerEntity))
+                .doOnSuccess(customerEntity -> logger.info("Saved customer {}", customerEntity));
     }
 }

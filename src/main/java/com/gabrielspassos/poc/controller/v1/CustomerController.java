@@ -22,6 +22,7 @@ public class CustomerController implements BaseVersion {
 
     @PostMapping(value = "/customer")
     public Mono<CustomerResponse> createCustomer(@RequestBody @Valid CustomerRequest customerRequest) {
-
+        return customerService.createCustomer(customerRequest)
+                .map(customerDTO -> objectMapper.convertValue(customerDTO, CustomerResponse.class));
     }
 }
