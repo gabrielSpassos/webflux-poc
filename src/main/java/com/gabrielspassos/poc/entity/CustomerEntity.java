@@ -13,7 +13,7 @@ import org.springframework.data.mongodb.core.mapping.MongoId;
 public class CustomerEntity {
 
     @MongoId
-    private Long id;
+    private String id;
     private String email;
     private String password;
     private String name;

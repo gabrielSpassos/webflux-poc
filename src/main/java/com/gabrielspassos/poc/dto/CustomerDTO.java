@@ -7,10 +7,10 @@ import lombok.Data;
 @Data
 public class CustomerDTO {
 
-    private Long id;
-    private String name;
-    private String password;
-    private String document;
+    private String id;
     private String email;
+    private String password;
+    private String name;
+    private String document;
 
 }
