@@ -6,21 +6,12 @@
 	},
 	"item": [
 		{
-			"name": "Create Customer",
+			"name": "Get Customers",
 			"request": {
-				"method": "POST",
+				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\t\"email\": \"gabriel@gmail.com\",\n\t\"password\": \"secret\",\n\t\"name\": \"GABRIEL SANTOS dOS PaSSOS\",\n\t\"document\": \"69364267001\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
 				"url": {
-					"raw": "http://localhost:8080/v1/customer",
+					"raw": "http://localhost:8080/v1/customers",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -28,14 +19,69 @@
 					"port": "8080",
 					"path": [
 						"v1",
-						"customer"
+						"customers"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Get Customer",
+			"name": "Get Customers By Status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/v1/customers?status=INACTIVE",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"customers"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "INACTIVE"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Customer",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"jose@gmail.com\",\n\t\"password\": \"secret\",\n\t\"name\": \"Jose Silva\",\n\t\"document\": \"79505703007\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/v1/customers",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"customers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Customer By Email",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -52,7 +98,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/v1/customer/69364267001/login/gabriel@gmail.com",
+					"raw": "http://localhost:8080/v1/customers/jose@gmail.com",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -60,10 +106,59 @@
 					"port": "8080",
 					"path": [
 						"v1",
-						"customer",
-						"69364267001",
-						"login",
-						"gabriel@gmail.com"
+						"customers",
+						"jose@gmail.com"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Customer By Email",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"fe@gmail.com\",\n\t\"password\": \"secret\",\n\t\"name\": \"FerNAnda Gomes Cardozo\",\n\t\"document\": \"02298068054\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/v1/customers/fe@gmail.com",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"customers",
+						"fe@gmail.com"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Customer By Email",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/v1/customers/jose@gmail.com",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"customers",
+						"jose@gmail.com"
 					]
 				}
 			},
