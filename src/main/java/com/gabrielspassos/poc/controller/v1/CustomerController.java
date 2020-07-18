@@ -5,6 +5,7 @@ import com.gabrielspassos.poc.controller.v1.request.CustomerRequest;
 import com.gabrielspassos.poc.controller.v1.response.CustomerResponse;
 import com.gabrielspassos.poc.service.CustomerService;
 import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,7 +49,7 @@ public class CustomerController implements BaseVersion {
                 .map(customerDTO -> objectMapper.convertValue(customerDTO, CustomerResponse.class));
     }
 
-    @GetMapping(value = "/customers/{email}")
+    @DeleteMapping(value = "/customers/{email}")
     public Mono<CustomerResponse> deleteCustomer(@PathVariable String email) {
         return customerService.deleteCustomer(email)
                 .map(customerDTO -> objectMapper.convertValue(customerDTO, CustomerResponse.class));
