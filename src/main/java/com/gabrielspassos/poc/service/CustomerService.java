@@ -4,47 +4,72 @@ import com.gabrielspassos.poc.builder.dto.CustomerDTOBuilder;
 import com.gabrielspassos.poc.builder.entity.CustomerEntityBuilder;
 import com.gabrielspassos.poc.controller.v1.request.CustomerRequest;
 import com.gabrielspassos.poc.dto.CustomerDTO;
-import com.gabrielspassos.poc.entity.CustomerEntity;
 import com.gabrielspassos.poc.exception.NotFoundException;
 import com.gabrielspassos.poc.repository.CustomerRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import static com.gabrielspassos.poc.service.ErrorConstants.NOT_FOUND_CUSTOMER_CODE;
-import static com.gabrielspassos.poc.service.ErrorConstants.NOT_FOUND_CUSTOMER_MESSAGE;
+import static com.gabrielspassos.poc.config.ErrorConstants.NOT_FOUND_CUSTOMER_CODE;
+import static com.gabrielspassos.poc.config.ErrorConstants.NOT_FOUND_CUSTOMER_MESSAGE;
 
+@Slf4j
 @Service
+@AllArgsConstructor
 public class CustomerService {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    @Autowired
     private PasswordService passwordService;
-    @Autowired
     private CustomerRepository customerRepository;
 
-    public Mono<CustomerDTO> createCustomer(CustomerRequest customerRequest) {
-        return getCustomer(customerRequest.getEmail(), customerRequest.getDocument())
-                .onErrorResume(NotFoundException.class,
-                        exception -> createCustomerEntity(customerRequest).map(CustomerDTOBuilder::build)
-                ).doOnSuccess(customerDTO -> logger.info("Created customer {}", customerDTO));
+    public Flux<CustomerDTO> getCustomers() {
+        log.info("Searching for customers");
+        return customerRepository.findAll()
+                .map(CustomerDTOBuilder::build);
     }
 
-    public Mono<CustomerDTO> getCustomer(String email, String document) {
-        logger.info("Searching for customer with email {} and document {}", email, document);
-        return customerRepository.findByEmailAndDocument(email, document)
+    public Mono<CustomerDTO> createCustomer(CustomerRequest customerRequest) {
+        return getCustomer(customerRequest.getEmail())
+                .onErrorResume(NotFoundException.class, e -> saveEntity(customerRequest))
+                .doOnSuccess(customerDTO -> log.info("Created customer {}", customerDTO));
+    }
+
+    public Mono<CustomerDTO> getCustomer(String email) {
+        log.info("Searching for customer with email {}", email);
+        return customerRepository.findByEmail(email)
                 .switchIfEmpty(Mono.error(new NotFoundException(NOT_FOUND_CUSTOMER_CODE, NOT_FOUND_CUSTOMER_MESSAGE)))
                 .map(CustomerDTOBuilder::build)
-                .doOnSuccess(customerDTO -> logger.info("Found customer {}", customerDTO));
+                .doOnSuccess(customerDTO -> log.info("Found customer {}", customerDTO));
     }
 
-    private Mono<CustomerEntity> createCustomerEntity(CustomerRequest customerRequest) {
+    public Mono<CustomerDTO> updateCustomer(String email, CustomerRequest customerRequest) {
+        return getCustomer(email)
+                .flatMap(customerDTO -> {
+                    return passwordService.encryptPassword(customerRequest.getPassword())
+                            .map(encryptedPassword -> CustomerEntityBuilder
+                                    .build(customerRequest, encryptedPassword, customerDTO)
+                            );
+                }).flatMap(customerEntity -> customerRepository.save(customerEntity))
+                .map(CustomerDTOBuilder::build)
+                .doOnSuccess(customerDTO -> log.info("Updated customer {}", customerDTO));
+
+    }
+
+    public Mono<CustomerDTO> deleteCustomer(String email) {
+        return getCustomer(email)
+                .map(CustomerEntityBuilder::build)
+                .flatMap(customerEntity -> {
+                    return customerRepository.delete(customerEntity)
+                            .map(aVoid -> CustomerDTOBuilder.build(customerEntity));
+                });
+    }
+
+    private Mono<CustomerDTO> saveEntity(CustomerRequest customerRequest) {
         return passwordService.encryptPassword(customerRequest.getPassword())
                 .map(encryptedPassword -> CustomerEntityBuilder.build(customerRequest, encryptedPassword))
                 .flatMap(customerEntity -> customerRepository.save(customerEntity))
-                .doOnSuccess(customerEntity -> logger.info("Saved customer {}", customerEntity));
+                .map(CustomerDTOBuilder::build)
+                .doOnSuccess(customerDTO -> log.info("Saved customer {}", customerDTO));
     }
 }

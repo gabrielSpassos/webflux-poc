@@ -8,6 +8,5 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface CustomerRepository extends ReactiveMongoRepository<CustomerEntity, Long> {
 
-    Mono<CustomerEntity> findByEmailAndPassword(String email, String password);
-    Mono<CustomerEntity> findByEmailAndDocument(String email, String document);
+    Mono<CustomerEntity> findByEmail(String email);
 }
