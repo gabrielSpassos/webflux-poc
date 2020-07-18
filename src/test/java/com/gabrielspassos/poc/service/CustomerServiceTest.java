@@ -3,6 +3,7 @@ package com.gabrielspassos.poc.service;
 import com.gabrielspassos.poc.controller.v1.request.CustomerRequest;
 import com.gabrielspassos.poc.dto.CustomerDTO;
 import com.gabrielspassos.poc.entity.CustomerEntity;
+import com.gabrielspassos.poc.enumerator.CustomerStatusEnum;
 import com.gabrielspassos.poc.exception.NotFoundException;
 import com.gabrielspassos.poc.repository.CustomerRepository;
 import com.gabrielspassos.poc.stub.EntityStub;
@@ -34,7 +35,6 @@ public class CustomerServiceTest {
     private CustomerRepository customerRepository;
 
     private final CustomerRequest customerRequest = RequestStub.create();
-    private final CustomerEntity customerEntityWithoutId = EntityStub.createWithoutId();
     private final CustomerEntity customerEntity = EntityStub.create();
     private final String email = "gabriel@gmail.com";
     private final String encryptedPassword = "xxx";
@@ -54,7 +54,7 @@ public class CustomerServiceTest {
     public void shouldCreateCustomer() {
         given(customerRepository.findByEmail("gabriel@gmail.com")).willReturn(Mono.empty());
         given(passwordService.encryptPassword("1234")).willReturn(Mono.just(encryptedPassword));
-        given(customerRepository.save(customerEntityWithoutId)).willReturn(Mono.just(customerEntity));
+        given(customerRepository.save(any())).willReturn(Mono.just(customerEntity));
 
         CustomerDTO customerDTO = customerService.createCustomer(customerRequest).block();
 
@@ -83,7 +83,7 @@ public class CustomerServiceTest {
     public void shouldReturnUpdatedCustomer() {
         given(customerRepository.findByEmail(email)).willReturn(Mono.just(customerEntity));
         given(passwordService.encryptPassword("1234")).willReturn(Mono.just(encryptedPassword));
-        given(customerRepository.save(customerEntity)).willReturn(Mono.just(customerEntity));
+        given(customerRepository.save(any())).willReturn(Mono.just(customerEntity));
 
         CustomerDTO customerDTO = customerService.updateCustomer(email, customerRequest).block();
 
@@ -93,8 +93,10 @@ public class CustomerServiceTest {
 
     @Test
     public void shouldDeleteCustomer() {
+        CustomerEntity deletedEntity = EntityStub.create();
+        deletedEntity.setStatus(CustomerStatusEnum.INACTIVE);
         given(customerRepository.findByEmail(email)).willReturn(Mono.just(customerEntity));
-        given(customerRepository.delete(customerEntity)).willReturn(Mono.empty());
+        given(customerRepository.save(any())).willReturn(Mono.just(deletedEntity));
 
         CustomerDTO customerDTO = customerService.deleteCustomer(email).block();
 

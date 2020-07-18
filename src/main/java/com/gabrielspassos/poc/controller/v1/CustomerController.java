@@ -1,6 +1,6 @@
 package com.gabrielspassos.poc.controller.v1;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gabrielspassos.poc.builder.response.CustomerResponseBuilder;
 import com.gabrielspassos.poc.controller.v1.request.CustomerRequest;
 import com.gabrielspassos.poc.controller.v1.response.CustomerResponse;
 import com.gabrielspassos.poc.service.CustomerService;
@@ -22,36 +22,35 @@ import javax.validation.Valid;
 public class CustomerController implements BaseVersion {
 
     private CustomerService customerService;
-    private ObjectMapper objectMapper;
 
     @GetMapping(value = "/customers")
     public Flux<CustomerResponse> getCustomers() {
         return customerService.getCustomers()
-                .map(customerDTO -> objectMapper.convertValue(customerDTO, CustomerResponse.class));
+                .map(CustomerResponseBuilder::build);
     }
 
     @PostMapping(value = "/customers")
     public Mono<CustomerResponse> createCustomer(@RequestBody @Valid CustomerRequest customerRequest) {
         return customerService.createCustomer(customerRequest)
-                .map(customerDTO -> objectMapper.convertValue(customerDTO, CustomerResponse.class));
+                .map(CustomerResponseBuilder::build);
     }
 
     @GetMapping(value = "/customers/{email}")
     public Mono<CustomerResponse> getCustomerByEmail(@PathVariable String email) {
         return customerService.getCustomer(email)
-                .map(customerDTO -> objectMapper.convertValue(customerDTO, CustomerResponse.class));
+                .map(CustomerResponseBuilder::build);
     }
 
     @PutMapping(value = "/customers/{email}")
     public Mono<CustomerResponse> updateCustomer(@PathVariable String email,
                                                  @RequestBody @Valid CustomerRequest customerRequest) {
         return customerService.updateCustomer(email, customerRequest)
-                .map(customerDTO -> objectMapper.convertValue(customerDTO, CustomerResponse.class));
+                .map(CustomerResponseBuilder::build);
     }
 
     @DeleteMapping(value = "/customers/{email}")
     public Mono<CustomerResponse> deleteCustomer(@PathVariable String email) {
         return customerService.deleteCustomer(email)
-                .map(customerDTO -> objectMapper.convertValue(customerDTO, CustomerResponse.class));
+                .map(CustomerResponseBuilder::build);
     }
 }

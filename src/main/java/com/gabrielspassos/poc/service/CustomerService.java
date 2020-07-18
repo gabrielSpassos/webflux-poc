@@ -14,6 +14,7 @@ import reactor.core.publisher.Mono;
 
 import static com.gabrielspassos.poc.config.ErrorConstants.NOT_FOUND_CUSTOMER_CODE;
 import static com.gabrielspassos.poc.config.ErrorConstants.NOT_FOUND_CUSTOMER_MESSAGE;
+import static com.gabrielspassos.poc.enumerator.CustomerStatusEnum.INACTIVE;
 
 @Slf4j
 @Service
@@ -58,11 +59,10 @@ public class CustomerService {
 
     public Mono<CustomerDTO> deleteCustomer(String email) {
         return getCustomer(email)
-                .map(CustomerEntityBuilder::build)
-                .map(customerEntity -> {
-                    customerRepository.delete(customerEntity).subscribe();
-                    return CustomerDTOBuilder.build(customerEntity);
-                }).doOnSuccess(customerDTO -> log.info("Deleted customer {}", customerDTO));
+                .map(customerDTO -> CustomerEntityBuilder.build(customerDTO, INACTIVE))
+                .flatMap(customerEntity -> customerRepository.save(customerEntity))
+                .map(CustomerDTOBuilder::build)
+                .doOnSuccess(customerDTO -> log.info("Deleted customer {}", customerDTO));
     }
 
     private Mono<CustomerDTO> saveEntity(CustomerRequest customerRequest) {

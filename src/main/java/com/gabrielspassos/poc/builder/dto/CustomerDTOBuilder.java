@@ -12,6 +12,9 @@ public class CustomerDTOBuilder {
                 .password(customerEntity.getPassword())
                 .name(customerEntity.getName())
                 .document(customerEntity.getDocument())
+                .status(customerEntity.getStatus())
+                .creationDateTime(customerEntity.getCreationDateTime())
+                .updateDateTime(customerEntity.getUpdateDateTime())
                 .build();
     }
 }
