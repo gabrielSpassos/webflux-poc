@@ -59,10 +59,10 @@ public class CustomerService {
     public Mono<CustomerDTO> deleteCustomer(String email) {
         return getCustomer(email)
                 .map(CustomerEntityBuilder::build)
-                .flatMap(customerEntity -> {
-                    return customerRepository.delete(customerEntity)
-                            .map(aVoid -> CustomerDTOBuilder.build(customerEntity));
-                });
+                .map(customerEntity -> {
+                    customerRepository.delete(customerEntity).subscribe();
+                    return CustomerDTOBuilder.build(customerEntity);
+                }).doOnSuccess(customerDTO -> log.info("Deleted customer {}", customerDTO));
     }
 
     private Mono<CustomerDTO> saveEntity(CustomerRequest customerRequest) {
