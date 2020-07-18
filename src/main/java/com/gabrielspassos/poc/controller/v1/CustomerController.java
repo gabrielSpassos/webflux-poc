@@ -23,7 +23,7 @@ public class CustomerController implements BaseVersion {
     private CustomerService customerService;
     private ObjectMapper objectMapper;
 
-    @PostMapping(value = "/customers")
+    @GetMapping(value = "/customers")
     public Flux<CustomerResponse> getCustomers() {
         return customerService.getCustomers()
                 .map(customerDTO -> objectMapper.convertValue(customerDTO, CustomerResponse.class));
