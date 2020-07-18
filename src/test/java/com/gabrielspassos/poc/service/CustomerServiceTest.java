@@ -77,7 +77,7 @@ public class CustomerServiceTest {
     public void shouldThrowErrorToGetCustomerByEmail() {
         given(customerRepository.findByEmail(any())).willReturn(Mono.empty());
 
-        Assertions.assertThrows(NotFoundException.class, () -> customerService.getCustomer(email));
+        Assertions.assertThrows(NotFoundException.class, () -> customerService.getCustomer(email).block());
     }
 
     @Test
