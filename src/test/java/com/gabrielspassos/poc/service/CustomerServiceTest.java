@@ -24,6 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class CustomerServiceTest {
@@ -49,6 +51,19 @@ public class CustomerServiceTest {
         assertNotNull(customerDTOList);
         assertEquals(1, customerDTOList.size());
         assertEquals("16535378098", customerDTOList.get(0).getDocument());
+        verify(customerRepository, never()).findByStatus(any());
+    }
+
+    @Test
+    public void shouldReturnCustomersByStatus() {
+        given(customerRepository.findByStatus(ACTIVE)).willReturn(Flux.just(customerEntity));
+
+        List<CustomerDTO> customerDTOList = customerService.getCustomers(ACTIVE).collectList().block();
+
+        assertNotNull(customerDTOList);
+        assertEquals(1, customerDTOList.size());
+        assertEquals("16535378098", customerDTOList.get(0).getDocument());
+        verify(customerRepository, never()).findAll();
     }
 
     @Test
