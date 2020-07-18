@@ -4,6 +4,7 @@ import com.gabrielspassos.poc.builder.dto.CustomerDTOBuilder;
 import com.gabrielspassos.poc.builder.entity.CustomerEntityBuilder;
 import com.gabrielspassos.poc.controller.v1.request.CustomerRequest;
 import com.gabrielspassos.poc.dto.CustomerDTO;
+import com.gabrielspassos.poc.enumerator.CustomerStatusEnum;
 import com.gabrielspassos.poc.exception.NotFoundException;
 import com.gabrielspassos.poc.repository.CustomerRepository;
 import lombok.AllArgsConstructor;
@@ -12,8 +13,11 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Objects;
+
 import static com.gabrielspassos.poc.config.ErrorConstants.NOT_FOUND_CUSTOMER_CODE;
 import static com.gabrielspassos.poc.config.ErrorConstants.NOT_FOUND_CUSTOMER_MESSAGE;
+import static com.gabrielspassos.poc.enumerator.CustomerStatusEnum.ACTIVE;
 import static com.gabrielspassos.poc.enumerator.CustomerStatusEnum.INACTIVE;
 
 @Slf4j
@@ -24,15 +28,23 @@ public class CustomerService {
     private PasswordService passwordService;
     private CustomerRepository customerRepository;
 
-    public Flux<CustomerDTO> getCustomers() {
+    public Flux<CustomerDTO> getCustomers(CustomerStatusEnum status) {
+        if (Objects.nonNull(status)) {
+            log.info("Searching for customers with status {}", status);
+            return customerRepository.findByStatus(status)
+                    .map(CustomerDTOBuilder::build);
+        }
+
         log.info("Searching for customers");
         return customerRepository.findAll()
                 .map(CustomerDTOBuilder::build);
     }
 
     public Mono<CustomerDTO> createCustomer(CustomerRequest customerRequest) {
-        return getCustomer(customerRequest.getEmail())
-                .onErrorResume(NotFoundException.class, e -> saveEntity(customerRequest))
+        return customerRepository.findByEmailAndStatus(customerRequest.getEmail(), ACTIVE)
+                .switchIfEmpty(Mono.error(IllegalStateException::new))
+                .map(CustomerDTOBuilder::build)
+                .onErrorResume(IllegalStateException.class, e -> saveEntity(customerRequest))
                 .doOnSuccess(customerDTO -> log.info("Created customer {}", customerDTO));
     }
 

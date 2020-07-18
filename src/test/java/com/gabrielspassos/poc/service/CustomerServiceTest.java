@@ -19,6 +19,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
+import static com.gabrielspassos.poc.enumerator.CustomerStatusEnum.ACTIVE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -43,7 +44,7 @@ public class CustomerServiceTest {
     public void shouldReturnCustomers() {
         given(customerRepository.findAll()).willReturn(Flux.just(customerEntity));
 
-        List<CustomerDTO> customerDTOList = customerService.getCustomers().collectList().block();
+        List<CustomerDTO> customerDTOList = customerService.getCustomers(null).collectList().block();
 
         assertNotNull(customerDTOList);
         assertEquals(1, customerDTOList.size());
@@ -52,7 +53,7 @@ public class CustomerServiceTest {
 
     @Test
     public void shouldCreateCustomer() {
-        given(customerRepository.findByEmail("gabriel@gmail.com")).willReturn(Mono.empty());
+        given(customerRepository.findByEmailAndStatus("gabriel@gmail.com", ACTIVE)).willReturn(Mono.empty());
         given(passwordService.encryptPassword("1234")).willReturn(Mono.just(encryptedPassword));
         given(customerRepository.save(any())).willReturn(Mono.just(customerEntity));
 

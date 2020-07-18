@@ -3,6 +3,7 @@ package com.gabrielspassos.poc.controller.v1;
 import com.gabrielspassos.poc.builder.response.CustomerResponseBuilder;
 import com.gabrielspassos.poc.controller.v1.request.CustomerRequest;
 import com.gabrielspassos.poc.controller.v1.response.CustomerResponse;
+import com.gabrielspassos.poc.enumerator.CustomerStatusEnum;
 import com.gabrielspassos.poc.service.CustomerService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -24,8 +26,8 @@ public class CustomerController implements BaseVersion {
     private CustomerService customerService;
 
     @GetMapping(value = "/customers")
-    public Flux<CustomerResponse> getCustomers() {
-        return customerService.getCustomers()
+    public Flux<CustomerResponse> getCustomers(@RequestParam(required = false) CustomerStatusEnum status) {
+        return customerService.getCustomers(status)
                 .map(CustomerResponseBuilder::build);
     }
 
