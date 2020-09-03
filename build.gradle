@@ -2,6 +2,7 @@ plugins {
 	id 'org.springframework.boot' version '2.2.7.RELEASE'
 	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
 	id 'java'
+	id 'info.solidsoft.pitest' version '1.5.1'
 }
 
 group = 'com.gabrielspassos.poc'
@@ -24,6 +25,7 @@ dependencies {
 	implementation "org.apache.commons:commons-text:1.8"
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+	testCompile 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.7'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
@@ -32,4 +34,15 @@ dependencies {
 
 test {
 	useJUnitPlatform()
+}
+
+pitest {
+	junit5PluginVersion = '0.12'
+}
+
+pitest {
+	targetClasses = ["${project.group}.*"]
+	threads = 4
+	outputFormats = ['XML', 'HTML']
+	timestampedReports = false
 }
