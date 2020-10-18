@@ -16,5 +16,11 @@ jobs:
         with:
           java-version: 1.11
 
+      - name: Run unit tests
+        run: ./gradlew clean test
+
+      - name: Run pitest
+        run: ./gradlew clean pitest
+
       - name: Build jar
-        run: ./gradlew clean build
+        run: ./gradlew clean build -x test
