@@ -1,0 +1,16 @@
+nome: Java CI
+
+em: [push]
+
+trabalhos:
+  criar:
+    runs-on: ubuntu-latest
+
+    etapas:
+      - usa: actions/checkout@v2
+      - nome: Set up JDK 1.8
+        usa: actions/setup-java@v1
+        com:
+          java-version: 1.8
+      - nome: Criar com Gradle
+        executar: ./gradlew build
