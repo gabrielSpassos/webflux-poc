@@ -4,3 +4,7 @@ spring:
   data:
     mongodb:
       uri: mongodb+srv://dbAdmin:dbAdminPassword@webflux-poc-database-9cvme.gcp.mongodb.net/test?retryWrites=true&w=majority
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

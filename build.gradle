@@ -17,9 +17,11 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven { url 'https://oss.jfrog.org/artifactory/oss-snapshot-local/' }
 }
 
 dependencies {
+	implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.4.8'
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation "org.apache.commons:commons-text:1.8"
