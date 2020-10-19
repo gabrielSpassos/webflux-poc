@@ -58,7 +58,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"email\": \"jose@gmail.com\",\n\t\"password\": \"secret\",\n\t\"name\": \"Jose Silva\",\n\t\"document\": \"79505703007\"\n}",
+					"raw": "{\n\t\"email\": \"emily@gmail.com\",\n\t\"password\": \"3040\",\n\t\"name\": \"Emilly Ester Allana Alves\",\n\t\"document\": \"47666869690\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"

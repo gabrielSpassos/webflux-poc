@@ -8,3 +8,6 @@ spring:
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
+
+secret:
+  password: '7DD84BBAF09D2AADE38ABCD58E070359CE3DE82DD965DAE5'
